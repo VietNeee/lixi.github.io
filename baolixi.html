@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bao Lì Xì</title>
+  <style>
+    .bao-lixix {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+    .bao-lixix img {
+      margin: 10px;
+      cursor: pointer;
+      width: 170px;
+      height: 219px;
+      position: relative; /* Thêm vị trí tương đối cho phần tử con */
+    }
+    .bao-lixix img .recipient-name {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 2px 2px 4px #000000;
+      z-index: 1;
+
+    }
+    /* Chia mỗi hàng thành 5 cột */
+    @media (min-width: 768px) {
+      .bao-lixix {
+        flex-wrap: wrap;
+      }
+      .bao-lixix img {
+        flex: 0 0 calc(20% - 20px); /* 20% width cho mỗi ảnh và 20px margin */
+        position:relative
+      }
+    }
+    .selected {
+      border: 10px solid red;
+      pointer-events: none; /* Ngăn người dùng nhấp vào bao đã được chọn */
+    }
+    .selected::after {
+      content: "Selected";
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-weight: bold;
+      color: white;
+      background-color: red;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+
+
+<form id="name-form">
+  <label for="name">Nhập tên của bạn:</label><br>
+  <input type="text" id="name" name="name"><br><br>
+  <button type="button" onclick="showBaoLixi()">Tiếp tục</button>
+</form>
+
+<div class="bao-lixix" style="display:none;">
+  <img src="images/bao1.jpg" onclick="selectBao(this, 0)" alt="Bao lì xì 1">
+  <img src="images/bao2.jpg" onclick="selectBao(this, 1)" alt="Bao lì xì 2">
+  <img src="images/bao3.jpg" onclick="selectBao(this, 2)" alt="Bao lì xì 3">
+  <img src="images/bao4.jpg" onclick="selectBao(this, 3)" alt="Bao lì xì 4">
+  <img src="images/bao5.jpg" onclick="selectBao(this, 4)" alt="Bao lì xì 5">
+  <img src="images/bao6.jpg" onclick="selectBao(this, 5)" alt="Bao lì xì 6">
+  <img src="images/bao7.jpg" onclick="selectBao(this, 6)" alt="Bao lì xì 7">
+  <img src="images/bao8.jpg" onclick="selectBao(this, 7)" alt="Bao lì xì 8">
+</div>
+
+<p id="selected-bao-info"></p>
+
+<button onclick="shuffleValues()">Xáo trộn lại các giá trị tiền trong các bao</button>
+
+<script>
+  // Mảng chứa các giá trị tiền cố định
+  var fixedValues = [5000 + "đồng", 10000 + "đồng", 20000+" đồng", 50000+"đồng", 100000+" đồng", 60000+" đồng", "Có cái nịt", 30000+" đồng"];
+  var selectedBaoIndex = -1; // Chỉ số của bao lì xì được chọn
+  var selectedValues = []; // Mảng chứa các giá trị của các bao đã được chọn
+
+  function showMoney(amount) {
+    alert("Bạn đã nhận được " + amount.toLocaleString() + " đồng Polime Việt Nam từ bao lì xì này!");
+  }
+
+  function showBaoLixi() {
+    var name = document.getElementById("name").value;
+    if (name.trim() === "") {
+      alert("Vui lòng nhập tên của bạn.");
+      return;
+    }
+    document.getElementById("name-form").style.display = "none";
+    document.querySelector(".bao-lixix").style.display = "block";
+     // Xáo trộn các giá trị sau khi người dùng nhập tên và tiếp tục
+    shuffleValues();
+  }
+
+  function selectBao(img, index) {
+    // Kiểm tra nếu đã chọn một bao lì xì trước đó
+    if (selectedBaoIndex !== -1) {
+      alert("Bạn đã chọn một bao lì xì. Vui lòng không chọn lại.");
+      return; // Ngừng thực hiện các hành động tiếp theo nếu đã chọn một bao lì xì
+    }
+
+    // Tô đen bao lì xì được chọn và lưu chỉ số của nó
+    img.classList.add('selected');
+    selectedBaoIndex = index;
+    selectedValues.push(fixedValues[index]); // Thêm giá trị của bao đã được chọn vào mảng selectedValues
+    // Hiển thị thông tin bao lì xì được chọn
+    var selectedBaoInfo = document.getElementById('selected-bao-info');
+    selectedBaoInfo.textContent = "Bạn đã chọn bao lì xì. Bạn sẽ nhận được " + fixedValues[index].toLocaleString() + " !";
+    
+    // Thêm tên người nhận vào bao lì xì
+    var recipientName = document.createElement('span');
+    recipientName.textContent = document.getElementById('name').value;
+    recipientName.classList.add('recipient-name');
+    img.appendChild(recipientName);
+  }
+
+  function shuffleValues() {
+  // Loại bỏ các giá trị đã được chọn từ mảng fixedValues
+  selectedValues.forEach(function(value) {
+    var index = fixedValues.indexOf(value);
+    if (index !== -1) {
+      fixedValues.splice(index, 1);
+    }
+  });
+
+  // Xáo trộn lại các giá trị tiền trong mảng fixedValues
+  fixedValues.sort(() => Math.random() - 0.5);
+
+  // Hiển thị thông báo nổi cho việc xáo trộn giá trị
+  alert("Danh sách các bao lì xì đã được xáo trộn.");
+}
+</script>
+
+</body>
+</html>
